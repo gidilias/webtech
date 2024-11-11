@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stylish News - Articles</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="navbar navbar-expand-lg navbar-light px-4" id="header">
+    <a class="navbar-brand fw-bold" href="#">📰 Stylish News</a>
+    <div class="navbar-nav ml-auto">
+      <a class="nav-link" href="about-me.html">About Me</a>
+      <a class="nav-link" href="main.html">Main</a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div id="background" class="container-fluid py-5">
+    <div class="container" id="main">
+      <h2 class="mb-4 text-light">All Articles</h2>
+      <div class="d-flex mb-4">
+        <button class="btn btn-primary me-2" onclick="sortArticles('views')">Sort by Popularity</button>
+        <button class="btn btn-secondary" onclick="sortArticles('date')">Sort by Date</button>
+      </div>
+      <div id="article-container" class="row">
+        <!-- Articles will be dynamically loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center text-light py-3" id="footer">
+    <p>© 2024 Stylish News Dashboard. All Rights Reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
