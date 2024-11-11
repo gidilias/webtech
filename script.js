@@ -1,75 +1,69 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const themeToggle = document.getElementById("theme-toggle");
-    const articlesList = document.getElementById("articles-list");
-    const mostPopularContent = document.getElementById("most-popular-content");
+let articles = [];
+const articleImages = [
+  "https://www.luxcafeclub.com/cdn/shop/articles/240916-coffee-caffeine-heart-health-kh-d4d5cb_1100x.jpg?v=1726678632",
+  "https://via.placeholder.com/600x400?text=Article+2",
+  "https://via.placeholder.com/600x400?text=Article+3",
+  "https://via.placeholder.com/600x400?text=Article+4",
+  "https://via.placeholder.com/600x400?text=Article+5",
+  "https://via.placeholder.com/600x400?text=Article+6",
+  "https://via.placeholder.com/600x400?text=Article+7",
+  "https://via.placeholder.com/600x400?text=Article+8",
+  "https://via.placeholder.com/600x400?text=Article+9",
+  "https://via.placeholder.com/600x400?text=Article+10"
+];
 
-    let articles = [];
+fetch('Articles.json')
+  .then(response => response.json())
+  .then(data => {
+    articles = data.articles;
+    displayArticles(articles);
+  });
 
-    fetch("Articles.json")
-        .then(response => response.json())
-        .then(data => {
-            articles = data.articles;
-            displayArticles(articles);
-            displayMostPopularArticle();
-        });
+function displayArticles(articles) {
+  const container = document.getElementById('article-container');
+  container.innerHTML = articles
+    .map((article, index) => `
+      <div class="col-md-4">
+        <div class="card" onclick="openArticle(${index})">
+          <img src="${articleImages[index]}" class="card-img-top" alt="${article.title}">
+          <div class="card-body">
+            <h5 class="card-title">${article.title}</h5>
+            <p class="card-text">${article.content.substring(0, 100)}...</p>
+            <p>
+              <small class="text-muted">
+                ${new Date(article.date).toLocaleDateString()} - ${calculateReadingTime(article.wordCount)} min read
+              </small>
+            </p>
+            <p><strong>${article.views} views</strong></p>
+          </div>
+        </div>
+      </div>
+    `).join('');
+}
 
-    const currentTheme = localStorage.getItem("theme") || "light-mode";
-    document.body.className = currentTheme;
-    themeToggle.textContent = currentTheme === "light-mode" ? "Dark Mode" : "Light Mode";
+function calculateReadingTime(wordCount) {
+  return Math.ceil(wordCount / 200);
+}
 
-    themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("dark-mode");
-        document.body.classList.toggle("light-mode");
-        const theme = document.body.className;
-        localStorage.setItem("theme", theme);
-        themeToggle.textContent = theme === "light-mode" ? "Dark Mode" : "Light Mode";
-    });
+function openArticle(index) {
+  const article = articles[index];
+  document.getElementById('articleModalLabel').innerText = article.title;
+  document.getElementById('articleModalImage').src = articleImages[index];
+  document.getElementById('articleModalContent').innerText = article.content;
+  document.getElementById('articleModalDetails').innerText = `
+    Published on ${new Date(article.date).toLocaleDateString()} - ${article.views} views - ${calculateReadingTime(article.wordCount)} min read
+  `;
+  const modal = new bootstrap.Modal(document.getElementById('articleModal'));
+  modal.show();
+}
 
-    function displayArticles(articles) {
-        articlesList.innerHTML = "";
-        articles.forEach(article => {
-            const readingTime = Math.ceil(article.wordCount / 200);
-            const articleCard = `
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">${article.title}</h5>
-                            <p class="card-text">${article.date} - ${article.category}</p>
-                            <p class="card-text">Estimated Reading Time: ${readingTime} min</p>
-                            <p class="card-text">${article.content.substring(0, 100)}...</p>
-                            <button class="btn btn-primary" onclick="showArticle(${article.id})">Read More</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            articlesList.innerHTML += articleCard;
-        });
-    }
-
-    window.showArticle = function(id) {
-        const article = articles.find(a => a.id === id);
-        document.getElementById("articleTitle").innerText = article.title;
-        document.getElementById("articleContent").innerText = article.content;
-        $('#articleModal').modal('show');
-    }
-
-    document.getElementById("sort-by-views").addEventListener("click", () => {
-        articles.sort((a, b) => b.views - a.views);
-        displayArticles(articles);
-        displayMostPopularArticle();
-    });
-
-    document.getElementById("sort-by-date").addEventListener("click", () => {
-        articles.sort((a, b) => new Date(b.date) - new Date(a.date));
-        displayArticles(articles);
-    });
-
-    function displayMostPopularArticle() {
-        const mostPopular = articles.reduce((prev, current) => (prev.views > current.views) ? prev : current);
-        mostPopularContent.innerHTML = `
-            <h6>${mostPopular.title}</h6>
-            <p>${mostPopular.date}</p>
-            <p>${mostPopular.views} views</p>
-        `;
-    }
+function sortArticles(criteria) {
+  const sortedArticles = [...articles].sort((a, b) => {
+    if (criteria === 'views') return b.views - a.views;
+    if (criteria === 'date') return new Date(b.date) - new Date(a.date);
+  });
+  displayArticles(sortedArticles);
+}
+document.getElementById('getStartedBtn').addEventListener('click', function() {
+  window.location.href = 'main.html';
 });
